@@ -8,15 +8,10 @@ COPY requirements.txt .
 # Install dependencies - suppress hash checking
 RUN pip install --no-cache-dir --disable-pip-version-check -r requirements.txt
 
-# Copy application files first
-COPY *.py .
-COPY requirements.txt .
-# Copy model files explicitly
-COPY *.keras . 2>/dev/null || echo "No .keras files to copy"
-# Copy any other files
+# Copy all files (including model files)
 COPY . .
-# Verify model files are present
-RUN ls -la *.keras 2>/dev/null && echo "✅ Model files found" || echo "❌ Warning: No .keras files found"
+# Verify model files are present after copy
+RUN ls -la *.keras 2>/dev/null && echo "✅ Model files found in container" || echo "❌ Warning: No .keras files found in container"
 
 # Expose port
 EXPOSE 8000
