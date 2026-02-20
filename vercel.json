@@ -1,6 +1,15 @@
 {
-    "framework": "create-react-app",
-    "buildCommand": "cd forgery-frontend && npm install && npm run build",
-    "outputDirectory": "forgery-frontend/build",
-    "installCommand": "cd forgery-frontend && npm install"
+  "framework": "create-react-app",
+  "buildCommand": "cd forgery-frontend && npm install && npm run build",
+  "outputDirectory": "forgery-frontend/build",
+  "installCommand": "cd forgery-frontend && npm install",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ],
+  "env": {
+    "REACT_APP_API_URL": "@react_app_api_url"
+  }
 }
