@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: shiro-raksha-backend
+    runtime: docker
+    plan: free
+    rootDir: forgery-backend
+    startCommand: ""
+    envVars:
+      - key: PORT
+        value: 8000
