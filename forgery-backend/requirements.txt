@@ -1,8 +1,8 @@
-uvicorn
-numpy
-opencv-python-headless
-tensorflow
-fastapi
-scikit-image
-pillow
-python-multipart
+uvicorn==0.24.0
+numpy==1.24.3
+opencv-python-headless==4.8.1.78
+tensorflow==2.14.0
+fastapi==0.104.1
+scikit-image==0.22.0
+pillow==10.1.0
+python-multipart==0.0.6
