@@ -126,8 +126,26 @@ def to_base64(img):
     return base64.b64encode(buff.getvalue()).decode()
 
 # -------------------------------------------------------
-# API ROUTE
+# API ROUTES
 # -------------------------------------------------------
+@app.get("/")
+async def root():
+    """Health check endpoint"""
+    return {
+        "status": "online",
+        "models_loaded": len(models),
+        "message": "MedScan Backend API is running"
+    }
+
+@app.get("/health")
+async def health():
+    """Health check with model status"""
+    return {
+        "status": "healthy",
+        "models_loaded": len(models),
+        "models_ready": len(models) > 0
+    }
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
     load_ensemble()
