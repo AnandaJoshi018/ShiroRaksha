@@ -1,8 +1,8 @@
 {
   "framework": "create-react-app",
-  "buildCommand": "cd forgery-frontend && npm install && npm run build",
-  "outputDirectory": "forgery-frontend/build",
-  "installCommand": "cd forgery-frontend && npm install",
+  "buildCommand": "npm run build",
+  "outputDirectory": "build",
+  "installCommand": "npm install",
   "rewrites": [
     {
       "source": "/(.*)",
