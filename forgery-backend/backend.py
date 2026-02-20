@@ -25,6 +25,17 @@ THRES_REMOVAL_RATIO  = 0.5
 # FASTAPI
 # -------------------------------------------------------
 app = FastAPI()
+
+@app.on_event("startup")
+async def startup_event():
+    """Load models on startup for faster first request"""
+    print("🚀 Starting backend...")
+    load_ensemble()
+    if models:
+        print(f"✅ Backend ready with {len(models)} model(s)")
+    else:
+        print("⚠️  Warning: No models loaded. Check for .keras files in the directory.")
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -209,4 +220,5 @@ async def predict(file: UploadFile = File(...)):
 # RUN
 # -------------------------------------------------------
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
