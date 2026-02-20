@@ -1,0 +1,6 @@
+{
+    "framework": "create-react-app",
+    "buildCommand": "cd forgery-frontend && npm install && npm run build",
+    "outputDirectory": "forgery-frontend/build",
+    "installCommand": "cd forgery-frontend && npm install"
+}
