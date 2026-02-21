@@ -67,34 +67,31 @@ def load_ensemble():
 
     # Use absolute path relative to this script
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    checkpoint_dir = base_dir 
+    model_path = os.path.join(base_dir, "forensic_quad_core.keras")
     
     print(f"DEBUG: Backend Script Path: {os.path.abspath(__file__)}")
-    print(f"DEBUG: Searching for models in: {checkpoint_dir}")
-    print(f"DEBUG: Directory contents: {os.listdir(checkpoint_dir)}")
+    print(f"DEBUG: Looking for model at: {model_path}")
+    print(f"DEBUG: Directory contents: {os.listdir(base_dir)}")
     
-    model_files = glob.glob(os.path.join(checkpoint_dir, "*.keras"))
-
-    if not model_files:
-        msg = f"ERROR: No .keras models found in {checkpoint_dir}"
+    if not os.path.exists(model_path):
+        msg = f"ERROR: The model file was NOT found at {model_path}!"
         print(msg)
         last_model_error = msg
         return
 
-    print(f"SUCCESS: Found {len(model_files)} model(s): {[os.path.basename(f) for f in model_files]}")
-    print("Loading Ensemble Models...")
-    for f in model_files:
-        try:
-            m = tf.keras.models.load_model(
-                f,
-                custom_objects={"hybrid_loss": hybrid_loss, "dice_coef": dice_coef}
-            )
-            models.append(m)
-            print(f"Loaded: {os.path.basename(f)}")
-        except Exception as e:
-            err_msg = f"Failed loading {os.path.basename(f)}: {str(e)}"
-            print(err_msg)
-            last_model_error = err_msg
+    print("SUCCESS: Found forensic_quad_core.keras!")
+    print("Loading Model...")
+    try:
+        m = tf.keras.models.load_model(
+            model_path,
+            custom_objects={"hybrid_loss": hybrid_loss, "dice_coef": dice_coef}
+        )
+        models.append(m)
+        print("Loaded: forensic_quad_core.keras")
+    except Exception as e:
+        err_msg = f"Failed loading forensic_quad_core.keras: {str(e)}"
+        print(err_msg)
+        last_model_error = err_msg
 
     print(f"Ensemble ready with {len(models)} models.")
 
