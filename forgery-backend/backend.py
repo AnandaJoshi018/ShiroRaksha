@@ -29,12 +29,12 @@ app = FastAPI()
 @app.on_event("startup")
 async def startup_event():
     """Load models on startup for faster first request"""
-    print("🚀 Starting backend...")
+    print("Starting backend...")
     load_ensemble()
     if models:
-        print(f"✅ Backend ready with {len(models)} model(s)")
+        print(f"Backend ready with {len(models)} model(s)")
     else:
-        print("⚠️  Warning: No models loaded. Check for .keras files in the directory.")
+        print("Warning: No models loaded. Check for .keras files in the directory.")
 
 app.add_middleware(
     CORSMiddleware,
@@ -65,13 +65,16 @@ def load_ensemble():
         return
 
     checkpoint_dir = "./"  # same directory as backend.py
+    print(f"DEBUG: Current directory ({os.getcwd()}) contents: {os.listdir(checkpoint_dir)}")
+    
     model_files = glob.glob(os.path.join(checkpoint_dir, "*.keras"))
 
     if not model_files:
-        print("❌ No models found (*.keras)")
+        print("❌ No models found (*.keras) in", os.path.abspath(checkpoint_dir))
         return
 
-    print("🔄 Loading Ensemble Models...")
+    print(f"🔍 Found {len(model_files)} model files: {model_files}")
+    print("Loading Ensemble Models...")
     for f in model_files:
         try:
             m = tf.keras.models.load_model(
@@ -79,11 +82,11 @@ def load_ensemble():
                 custom_objects={"hybrid_loss": hybrid_loss, "dice_coef": dice_coef}
             )
             models.append(m)
-            print("✅ Loaded:", os.path.basename(f))
+            print("Loaded:", os.path.basename(f))
         except Exception as e:
-            print("❌ Failed loading", f, e)
+            print("Failed loading", f, e)
 
-    print("🚀 Ensemble ready with", len(models), "models.")
+    print("Ensemble ready with", len(models), "models.")
 
 # -------------------------------------------------------
 # PHYSICS ENGINE
