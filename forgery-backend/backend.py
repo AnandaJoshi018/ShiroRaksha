@@ -64,16 +64,21 @@ def load_ensemble():
     if models:
         return
 
-    checkpoint_dir = "./"  # same directory as backend.py
-    print(f"DEBUG: Current directory ({os.getcwd()}) contents: {os.listdir(checkpoint_dir)}")
+    # Use absolute path relative to this script
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    checkpoint_dir = base_dir 
+    
+    print(f"DEBUG: Backend Script Path: {os.path.abspath(__file__)}")
+    print(f"DEBUG: Searching for models in: {checkpoint_dir}")
+    print(f"DEBUG: Directory contents: {os.listdir(checkpoint_dir)}")
     
     model_files = glob.glob(os.path.join(checkpoint_dir, "*.keras"))
 
     if not model_files:
-        print("❌ No models found (*.keras) in", os.path.abspath(checkpoint_dir))
+        print(f"❌ ERROR: No .keras models found in {checkpoint_dir}")
         return
 
-    print(f"🔍 Found {len(model_files)} model files: {model_files}")
+    print(f"🔍 SUCCESS: Found {len(model_files)} model(s): {[os.path.basename(f) for f in model_files]}")
     print("Loading Ensemble Models...")
     for f in model_files:
         try:
@@ -82,11 +87,11 @@ def load_ensemble():
                 custom_objects={"hybrid_loss": hybrid_loss, "dice_coef": dice_coef}
             )
             models.append(m)
-            print("Loaded:", os.path.basename(f))
+            print(f"✅ Loaded: {os.path.basename(f)}")
         except Exception as e:
-            print("Failed loading", f, e)
+            print(f"❌ Failed loading {os.path.basename(f)}: {e}")
 
-    print("Ensemble ready with", len(models), "models.")
+    print(f"🚀 Ensemble ready with {len(models)} models.")
 
 # -------------------------------------------------------
 # PHYSICS ENGINE
