@@ -44,6 +44,7 @@ app.add_middleware(
 )
 
 models = []
+last_model_error = "No .keras files found or attempted"
 
 # -------------------------------------------------------
 # LOSS DEFINITIONS (for loading models)
@@ -60,7 +61,7 @@ def hybrid_loss(y,p): return tf.keras.losses.BinaryCrossentropy()(y,p) + dice_lo
 # LOAD ENSEMBLE
 # -------------------------------------------------------
 def load_ensemble():
-    global models
+    global models, last_model_error
     if models:
         return
 
@@ -75,10 +76,12 @@ def load_ensemble():
     model_files = glob.glob(os.path.join(checkpoint_dir, "*.keras"))
 
     if not model_files:
-        print(f"❌ ERROR: No .keras models found in {checkpoint_dir}")
+        msg = f"ERROR: No .keras models found in {checkpoint_dir}"
+        print(msg)
+        last_model_error = msg
         return
 
-    print(f"🔍 SUCCESS: Found {len(model_files)} model(s): {[os.path.basename(f) for f in model_files]}")
+    print(f"SUCCESS: Found {len(model_files)} model(s): {[os.path.basename(f) for f in model_files]}")
     print("Loading Ensemble Models...")
     for f in model_files:
         try:
@@ -87,11 +90,13 @@ def load_ensemble():
                 custom_objects={"hybrid_loss": hybrid_loss, "dice_coef": dice_coef}
             )
             models.append(m)
-            print(f"✅ Loaded: {os.path.basename(f)}")
+            print(f"Loaded: {os.path.basename(f)}")
         except Exception as e:
-            print(f"❌ Failed loading {os.path.basename(f)}: {e}")
+            err_msg = f"Failed loading {os.path.basename(f)}: {str(e)}"
+            print(err_msg)
+            last_model_error = err_msg
 
-    print(f"🚀 Ensemble ready with {len(models)} models.")
+    print(f"Ensemble ready with {len(models)} models.")
 
 # -------------------------------------------------------
 # PHYSICS ENGINE
@@ -179,7 +184,7 @@ async def predict(file: UploadFile = File(...)):
         return {
             "diagnosis": "ERROR",
             "type": "NONE",
-            "reason": "No models loaded. Please check backend directory for .keras files.",
+            "reason": f"No models loaded. Error details: {last_model_error}",
             "ai_probs": [0, 0, 0, 0],
             "heatmap": "",
             "mask": ""
